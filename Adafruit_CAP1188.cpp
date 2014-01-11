@@ -80,6 +80,7 @@ boolean Adafruit_CAP1188::begin(uint8_t i2caddr) {
   readRegister(CAP1188_PRODID);
   
   // Useful debugging info
+  
   Serial.print("Product ID: 0x");
   Serial.println(readRegister(CAP1188_PRODID), HEX);
   Serial.print("Manuf. ID: 0x");
@@ -149,7 +150,7 @@ static void i2cwrite(uint8_t x) {
 /**************************************************************************/
 uint8_t Adafruit_CAP1188::spixfer(uint8_t data) {
   if (_clk == -1) {
-    //Serial.println("Hardware SPI");
+   //Serial.println("Hardware SPI");
     return SPI.transfer(data);
   } else {
    // Serial.println("Software SPI");
@@ -168,10 +169,10 @@ uint8_t Adafruit_CAP1188::spixfer(uint8_t data) {
 
 uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
   if (_i2c) {
-    Wire.beginTransmission(CAP1188_I2CADDR);
+    Wire.beginTransmission(_i2caddr);
     i2cwrite(reg);
     Wire.endTransmission();
-    Wire.requestFrom(CAP1188_I2CADDR, 1);
+    Wire.requestFrom(_i2caddr, 1);
     return (i2cread());
   } else {
     if (_clk == -1) {
@@ -202,7 +203,7 @@ uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
 /**************************************************************************/
 void Adafruit_CAP1188::writeRegister(uint8_t reg, uint8_t value) {
   if (_i2c) {
-    Wire.beginTransmission(CAP1188_I2CADDR);
+    Wire.beginTransmission(_i2caddr);
     i2cwrite((uint8_t)reg);
     i2cwrite((uint8_t)(value));
     Wire.endTransmission();
