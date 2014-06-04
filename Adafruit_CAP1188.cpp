@@ -115,6 +115,13 @@ void Adafruit_CAP1188::LEDpolarity(uint8_t x) {
   writeRegister(CAP1188_LEDPOL, x);
 }
 
+void Adafruit_CAP1188::sensitivity(uint8_t x) {
+  if (x > 7){
+    return;
+  }
+  writeRegister(CAP1188_SENSCTRL, (x << 4) + B1111);
+}
+
 /*********************************************************************/
 
 /**************************************************************************/
