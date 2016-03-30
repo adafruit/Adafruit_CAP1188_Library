@@ -16,6 +16,25 @@
 
 #include "Adafruit_CAP1188.h"
 
+// If the SPI library has transaction support, these functions
+// establish settings and protect from interference from other
+// libraries.  Otherwise, they simply do nothing.
+#ifdef SPI_HAS_TRANSACTION
+  static inline void spi_begin(void) __attribute__((always_inline));
+  static inline void spi_begin(void) {
+    // max speed!
+    SPI.beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE0));
+  }
+  static inline void spi_end(void) __attribute__((always_inline));
+  static inline void spi_end(void) {
+    SPI.endTransaction();
+  }
+#else
+  #define spi_begin()
+  #define spi_end()
+#endif
+
+
 uint8_t mySPCR, SPCRback;
 
 Adafruit_CAP1188::Adafruit_CAP1188(int8_t resetpin) {
@@ -52,12 +71,16 @@ boolean Adafruit_CAP1188::begin(uint8_t i2caddr) {
   } else if (_clk == -1) {
     // Hardware SPI
     digitalWrite(_cs, HIGH);
-    SPCRback = SPCR;
-    SPI.begin();
-    SPI.setClockDivider(SPI_CLOCK_DIV8);
-    SPI.setDataMode(SPI_MODE0);
-    mySPCR = SPCR;
-    SPCR = SPCRback;
+#ifdef SPI_HAS_TRANSACTION
+      SPI.begin();
+#else
+      SPCRback = SPCR;
+      SPI.begin();
+      SPI.setClockDivider(SPI_CLOCK_DIV8);
+      SPI.setDataMode(SPI_MODE0);
+      mySPCR = SPCR;
+      SPCR = SPCRback;
+#endif
   } else {
     // Sofware SPI
     pinMode(_clk, OUTPUT);
@@ -175,10 +198,14 @@ uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
     Wire.requestFrom(_i2caddr, 1);
     return (i2cread());
   } else {
+#ifdef SPI_HAS_TRANSACTION
+      spi_begin();
+#else
     if (_clk == -1) {
       SPCRback = SPCR;
       SPCR = mySPCR;
     }
+#endif
     digitalWrite(_cs, LOW);
     // set address
     spixfer(0x7D);
@@ -188,9 +215,13 @@ uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
     spixfer(0x7F);
     uint8_t reply = spixfer(0); 
     digitalWrite(_cs, HIGH);
-    if (_clk == -1) {
-      SPCR = SPCRback;
-    }
+#ifdef SPI_HAS_TRANSACTION
+      spi_end();
+#else
+      if (_clk == -1) {
+          SPCR = SPCRback;
+      }
+#endif
     return reply;
   }  
 }
@@ -208,10 +239,14 @@ void Adafruit_CAP1188::writeRegister(uint8_t reg, uint8_t value) {
     i2cwrite((uint8_t)(value));
     Wire.endTransmission();
   } else {
-    if (_clk == -1) {
-      SPCRback = SPCR;
-      SPCR = mySPCR;
-    }
+#ifdef SPI_HAS_TRANSACTION
+      spi_begin();
+#else
+      if (_clk == -1) {
+          SPCRback = SPCR;
+          SPCR = mySPCR;
+      }
+#endif
     digitalWrite(_cs, LOW);
     // set address
     spixfer(0x7D);
@@ -221,8 +256,12 @@ void Adafruit_CAP1188::writeRegister(uint8_t reg, uint8_t value) {
     spixfer(0x7E);
     spixfer(value);
     digitalWrite(_cs, HIGH);
-    if (_clk == -1) {
-      SPCR = SPCRback;
-    }
+#ifdef SPI_HAS_TRANSACTION
+      spi_end();
+#else
+      if (_clk == -1) {
+        SPCR = SPCRback;
+      }
+#endif
   }
 }
