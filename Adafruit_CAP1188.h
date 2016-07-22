@@ -12,6 +12,9 @@
 
   Written by Limor Fried/Ladyada for Adafruit Industries.  
   BSD license, all text above must be included in any redistribution
+
+//Modified by Lucas McCallister
+7/21/16: Added functions to easily change sensitivity and turning off Multitouch.
  ****************************************************/
 
 #if (ARDUINO >= 100)
@@ -37,6 +40,13 @@
 #define CAP1188_MAIN_INT 0x01
 #define CAP1188_LEDPOL 0x73
 
+//Additional Registers
+#define CAP1188_CONFIG1 0x20
+#define CAP1188_CONFIG2 0x44
+#define CAP1188_SENSE 0x1F
+#define CAP1188_NOISETHRESH 0x38
+#define CAP1188_CALIBRATE 0x26
+#define CAP1188_RCCONFIG 0x2F
 
 class Adafruit_CAP1188 {
  public:
@@ -53,8 +63,12 @@ class Adafruit_CAP1188 {
   uint8_t readRegister(uint8_t reg);
   void writeRegister(uint8_t reg, uint8_t value);
   uint8_t touched(void);
-  void LEDpolarity(uint8_t x);
-
+  void LEDpolarity(uint8_t x);  
+  //new functions
+  void setSensitivty(uint8_t sense);   //Range 0 (Min) to 7 (Max)
+  void setNoiseThresh(uint8_t threshold);//Range 0 (25%) to 3 (62.5%)
+  void setGain(uint8_t gain); //Range 0-3
+  void turnOffMultiTouch();
  private:
   uint8_t spixfer(uint8_t x);
   boolean _i2c;
