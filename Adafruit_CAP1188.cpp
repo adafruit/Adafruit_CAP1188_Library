@@ -14,26 +14,7 @@
   BSD license, all text above must be included in any redistribution
  ****************************************************/
 
-#include "Adafruit_CAP1188.h"
-
-// If the SPI library has transaction support, these functions
-// establish settings and protect from interference from other
-// libraries.  Otherwise, they simply do nothing.
-#ifdef SPI_HAS_TRANSACTION
-  static inline void spi_begin(void) __attribute__((always_inline));
-  static inline void spi_begin(void) {
-    // max speed!
-    SPI.beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE0));
-  }
-  static inline void spi_end(void) __attribute__((always_inline));
-  static inline void spi_end(void) {
-    SPI.endTransaction();
-  }
-#else
-  #define spi_begin()
-  #define spi_end()
-#endif
-
+#include "Adafruit_CAP1188.h”
 
 uint8_t mySPCR, SPCRback;
 
@@ -71,16 +52,12 @@ boolean Adafruit_CAP1188::begin(uint8_t i2caddr) {
   } else if (_clk == -1) {
     // Hardware SPI
     digitalWrite(_cs, HIGH);
-#ifdef SPI_HAS_TRANSACTION
-      SPI.begin();
-#else
-      SPCRback = SPCR;
-      SPI.begin();
-      SPI.setClockDivider(SPI_CLOCK_DIV8);
-      SPI.setDataMode(SPI_MODE0);
-      mySPCR = SPCR;
-      SPCR = SPCRback;
-#endif
+    SPCRback = SPCR;
+    SPI.begin();
+    SPI.setClockDivider(SPI_CLOCK_DIV8);
+    SPI.setDataMode(SPI_MODE0);
+    mySPCR = SPCR;
+    SPCR = SPCRback;
   } else {
     // Sofware SPI
     pinMode(_clk, OUTPUT);
@@ -103,14 +80,14 @@ boolean Adafruit_CAP1188::begin(uint8_t i2caddr) {
   readRegister(CAP1188_PRODID);
   
   // Useful debugging info
-  
-  Serial.print("Product ID: 0x");
-  Serial.println(readRegister(CAP1188_PRODID), HEX);
-  Serial.print("Manuf. ID: 0x");
-  Serial.println(readRegister(CAP1188_MANUID), HEX);
-  Serial.print("Revision: 0x");
-  Serial.println(readRegister(CAP1188_REV), HEX);
-  
+  //
+  //Serial.print("Product ID: 0x");
+  //Serial.println(readRegister(CAP1188_PRODID), HEX);
+  //Serial.print("Manuf. ID: 0x");
+  //Serial.println(readRegister(CAP1188_MANUID), HEX);
+  //Serial.print("Revision: 0x");
+  //Serial.println(readRegister(CAP1188_REV), HEX);
+  //
 
   if ( (readRegister(CAP1188_PRODID) != 0x50) ||
        (readRegister(CAP1188_MANUID) != 0x5D) ||
@@ -138,6 +115,51 @@ void Adafruit_CAP1188::LEDpolarity(uint8_t x) {
   writeRegister(CAP1188_LEDPOL, x);
 }
 
+
+
+
+void Adafruit_CAP1188::setSensitivty(uint8_t sense) {
+	//Attenuate the Cap sensor (Register 0x1F).
+	//Sensitivity Range, Min to Max: 7-0 F.
+	if (sense > 7) {
+		sense = 7;
+	}
+	//bitshift the value, fill in final four digits with 1s.
+	sense = sense << 4;
+	sense = sense | B00001111;
+	//Serial.println("Sending Sensitivity: ");
+	//Serial.println(sense, HEX);
+	writeRegister(CAP1188_SENSE, sense);
+}
+
+void Adafruit_CAP1188::setNoiseThresh(uint8_t threshold) {
+	//Adjust Noise Threshold
+	/*Adjusts by percent:
+	0x00 - 25%
+	0x01 - 37.5% (Default)
+	0x02 - 50%
+	0x03 - 62.5% (Max)
+	*/
+	if (threshold > 3) {
+		threshold = 3;
+	}	
+	//Serial.println("Sending NoiseThresh: ");
+	//Serial.println(threshold, HEX);
+	writeRegister(CAP1188_NOISETHRESH, threshold);
+}
+
+void Adafruit_CAP1188::setGain(uint8_t gain) {
+	if (gain > 3) {
+		gain = 3;
+	}
+	gain = gain << 6;
+	writeRegister(CAP1188_MAIN, gain);
+}
+
+void Adafruit_CAP1188::turnOffMultiTouch() {
+		writeRegister(CAP1188_MTBLK, 0x80);
+		//Serial.println("Sending Mult Off");
+}
 /*********************************************************************/
 
 /**************************************************************************/
@@ -198,14 +220,10 @@ uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
     Wire.requestFrom(_i2caddr, 1);
     return (i2cread());
   } else {
-#ifdef SPI_HAS_TRANSACTION
-      spi_begin();
-#else
     if (_clk == -1) {
       SPCRback = SPCR;
       SPCR = mySPCR;
     }
-#endif
     digitalWrite(_cs, LOW);
     // set address
     spixfer(0x7D);
@@ -215,13 +233,9 @@ uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
     spixfer(0x7F);
     uint8_t reply = spixfer(0); 
     digitalWrite(_cs, HIGH);
-#ifdef SPI_HAS_TRANSACTION
-      spi_end();
-#else
-      if (_clk == -1) {
-          SPCR = SPCRback;
-      }
-#endif
+    if (_clk == -1) {
+      SPCR = SPCRback;
+    }
     return reply;
   }  
 }
@@ -239,14 +253,10 @@ void Adafruit_CAP1188::writeRegister(uint8_t reg, uint8_t value) {
     i2cwrite((uint8_t)(value));
     Wire.endTransmission();
   } else {
-#ifdef SPI_HAS_TRANSACTION
-      spi_begin();
-#else
-      if (_clk == -1) {
-          SPCRback = SPCR;
-          SPCR = mySPCR;
-      }
-#endif
+    if (_clk == -1) {
+      SPCRback = SPCR;
+      SPCR = mySPCR;
+    }
     digitalWrite(_cs, LOW);
     // set address
     spixfer(0x7D);
@@ -256,12 +266,8 @@ void Adafruit_CAP1188::writeRegister(uint8_t reg, uint8_t value) {
     spixfer(0x7E);
     spixfer(value);
     digitalWrite(_cs, HIGH);
-#ifdef SPI_HAS_TRANSACTION
-      spi_end();
-#else
-      if (_clk == -1) {
-        SPCR = SPCRback;
-      }
-#endif
+    if (_clk == -1) {
+      SPCR = SPCRback;
+    }
   }
 }
