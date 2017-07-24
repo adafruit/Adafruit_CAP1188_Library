@@ -41,6 +41,8 @@ Adafruit_CAP1188::Adafruit_CAP1188(int8_t resetpin) {
   // I2C
   _resetpin = resetpin;
   _i2c = true;
+  _i2cdatapin = SDA;
+  _i2cclockpin = SCL;
 }
 
 Adafruit_CAP1188::Adafruit_CAP1188(int8_t cspin, int8_t resetpin) {
@@ -63,9 +65,14 @@ Adafruit_CAP1188::Adafruit_CAP1188(int8_t clkpin, int8_t misopin,
   _i2c = false;
 }
 
+void Adafruit_CAP1188::setI2CPins(int i2cclock, int i2cdata) {
+  _i2cdatapin = i2cdata;
+  _i2cclockpin = i2cclock;
+}
+
 boolean Adafruit_CAP1188::begin(uint8_t i2caddr) {
   if (_i2c) {
-    Wire.begin();
+    Wire.begin(_i2cdatapin, _i2cclockpin);
     
     _i2caddr = i2caddr;
   } else if (_clk == -1) {
