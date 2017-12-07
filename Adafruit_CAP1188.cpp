@@ -127,11 +127,11 @@ boolean Adafruit_CAP1188::begin(uint8_t i2caddr) {
 }
 
 uint8_t  Adafruit_CAP1188::touched(void) {
-  uint8_t t = readRegister(CAP1188_SENINPUTSTATUS);
-  if (t) {
-    writeRegister(CAP1188_MAIN, readRegister(CAP1188_MAIN) & ~CAP1188_MAIN_INT);
+  uint8_t temp = readRegister(CAP1XXX_MAIN);
+  if (temp & CAP1XXX_MAIN_INT) {
+  	writeRegister(CAP1XXX_MAIN, temp & ~CAP1XXX_MAIN_INT);
   }
-  return t;
+  return readRegister(CAP1XXX_SENINPUTSTATUS);
 }
 
 void Adafruit_CAP1188::LEDpolarity(uint8_t x) {
