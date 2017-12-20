@@ -62,7 +62,7 @@ void setup() {
   Serial.println("CAP1188 found!");
   // setup interrupt pin 3 as input and attach interrupt
   pinMode(3, INPUT);
-  attachInterrupt(1, routine_Interrupt_CAP1188, FALLING);
+  attachInterrupt(digitalPinToInterrupt(3), routine_Interrupt_CAP1188, FALLING);
 }
 
 void loop() {
