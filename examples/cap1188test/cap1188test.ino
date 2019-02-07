@@ -30,6 +30,8 @@
 #define CAP1188_MISO  12
 #define CAP1188_CLK  13
 
+volatile bool interrupt = false;
+
 // For I2C, connect SDA to your Arduino's SDA pin, SCL to SCL pin
 // On UNO/Duemilanove/etc, SDA == Analog 4, SCL == Analog 5
 // On Leonardo/Micro, SDA == Digital 2, SCL == Digital 3
@@ -58,22 +60,27 @@ void setup() {
     while (1);
   }
   Serial.println("CAP1188 found!");
+  // setup interrupt pin 3 as input and attach interrupt
+  pinMode(3, INPUT);
+  attachInterrupt(digitalPinToInterrupt(3), routine_Interrupt_CAP1188, FALLING);
 }
 
 void loop() {
-  uint8_t touched = cap.touched();
-
-  if (touched == 0) {
-    // No touch detected
-    return;
-  }
-  
-  for (uint8_t i=0; i<8; i++) {
-    if (touched & (1 << i)) {
-      Serial.print("C"); Serial.print(i+1); Serial.print("\t");
+  if (interrupt) { // read sensor only if an interrupt was received
+    uint8_t touched = cap.touched();
+    for (uint8_t i = 0; i < 8; i++) {
+      if (touched & (1 << i)) {
+        Serial.print("C"); Serial.print(i + 1); Serial.print("\t");
+      }
     }
+    Serial.println();
+    interrupt = false;
   }
-  Serial.println();
+
   delay(50);
+}
+
+void routine_Interrupt_CAP1188()  {
+  interrupt = true;
 }
 
