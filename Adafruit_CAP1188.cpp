@@ -70,6 +70,7 @@ boolean Adafruit_CAP1188::begin(uint8_t i2caddr) {
     _i2caddr = i2caddr;
   } else if (_clk == -1) {
     // Hardware SPI
+    pinMode(_cs, OUTPUT);
     digitalWrite(_cs, HIGH);
 #ifdef SPI_HAS_TRANSACTION
       SPI.begin();
