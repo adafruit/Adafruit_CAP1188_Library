@@ -46,9 +46,10 @@ class Adafruit_CAP1188 {
 		   int8_t resetpin);
   // Hardware SPI
   Adafruit_CAP1188(int8_t cspin, int8_t resetpin);
-  // Hardware I2C
+  // Hardware I2C - default Arduino pins
   Adafruit_CAP1188(int8_t resetpin = -1);
 
+  void setI2CPins(int i2cclock, int i2cdata);
   boolean begin(uint8_t i2caddr = CAP1188_I2CADDR);
   uint8_t readRegister(uint8_t reg);
   void writeRegister(uint8_t reg, uint8_t value);
@@ -59,5 +60,6 @@ class Adafruit_CAP1188 {
   uint8_t spixfer(uint8_t x);
   boolean _i2c;
   int8_t _i2caddr, _resetpin, _cs, _clk, _mosi, _miso;
+  int _i2cdatapin, _i2cclockpin;
 };
 
