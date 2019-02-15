@@ -4,7 +4,7 @@
  *  This is a library for the CAP1188 8-Channel Capacitive Sensor
  *
  *  Designed specifically to work with the CAP1188 I2C/SPI 8-chan Capacitive
- * Sensor from Adafruit
+ *  Sensor from Adafruit
  *
  *  Pick one up today in the adafruit shop!
  *  ------> https://www.adafruit.com/product/1602
