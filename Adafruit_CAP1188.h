@@ -50,7 +50,7 @@
   0xFE ///< Manufacturer ID. Stores a fixed value that identifies SMSC
 #define CAP1188_STANDBYCFG                                                     \
   0x41 ///< Standby Configuration. Controls averaging and cycle time while in
-       ///< standby. 
+       ///< standby.
 #define CAP1188_REV                                                            \
   0xFF ///< Revision register. Stores an 8-bit value that represents the part
        ///< revision.
@@ -76,15 +76,18 @@ public:
   // Hardware I2C
   Adafruit_CAP1188(int8_t resetpin = -1);
 
-  boolean begin(uint8_t i2caddr = CAP1188_I2CADDR);
+  boolean begin(uint8_t i2caddr = CAP1188_I2CADDR, TwoWire *theWire = &Wire);
   uint8_t readRegister(uint8_t reg);
   void writeRegister(uint8_t reg, uint8_t value);
   uint8_t touched();
   void LEDpolarity(uint8_t x);
+  void i2cwrite(uint8_t x);
+  uint8_t i2cread();
 
 private:
   uint8_t spixfer(uint8_t x);
   boolean _i2c;
   int8_t _i2caddr, _resetpin, _cs, _clk, _mosi, _miso;
   uint8_t mySPCR, SPCRback;
+  TwoWire *_wire;
 };

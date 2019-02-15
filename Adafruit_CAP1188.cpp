@@ -29,6 +29,7 @@
  */
 
 #include "Adafruit_CAP1188.h"
+#include <Wire.h>
 
 // If the SPI library has transaction support, these functions
 // establish settings and protect from interference from other
@@ -107,14 +108,16 @@ Adafruit_CAP1188::Adafruit_CAP1188(int8_t clkpin, int8_t misopin,
  *            Displays useful debug info, as well as allow multiple touches (CAP1188_MTBLK), links leds to touches
  *            (CAP1188_LEDLINK), and increase the cycle time value (CAP1188_STANDBYCFG) 
  *    @param  i2caddr
- *            i2caddres (default to 0x29)
+ *            optional i2caddres (default to 0x29)
+ *    @param  theWire
+ *            optional wire object
  *    @return True if initialization was successful, otherwise false.
  */
-boolean Adafruit_CAP1188::begin(uint8_t i2caddr) {
+boolean Adafruit_CAP1188::begin(uint8_t i2caddr, TwoWire *theWire) {
   if (_i2c) {
-    Wire.begin();
-
+    _wire = theWire;
     _i2caddr = i2caddr;
+    _wire->begin();
   } else if (_clk == -1) {
     // Hardware SPI
     pinMode(_cs, OUTPUT);
@@ -196,12 +199,13 @@ void Adafruit_CAP1188::LEDpolarity(uint8_t x) {
 
 /*!
  *   @brief  Abstract away platform differences in Arduino wire library
+ *   @return Read value 
  */
-static uint8_t i2cread() {
+uint8_t Adafruit_CAP1188::i2cread() {
 #if ARDUINO >= 100
-  return Wire.read();
+  return _wire->read();
 #else
-  return Wire.receive();
+  return _wire->receive();
 #endif
 }
 
@@ -209,11 +213,11 @@ static uint8_t i2cread() {
     @brief  Abstract away platform differences in Arduino wire library
     @param  x
  */
-static void i2cwrite(uint8_t x) {
+void Adafruit_CAP1188::i2cwrite(uint8_t x) {
 #if ARDUINO >= 100
-  Wire.write((uint8_t)x);
+  _wire->write((uint8_t)x);
 #else
-  Wire.send(x);
+  _wire->send(x);
 #endif
 }
 
@@ -247,10 +251,10 @@ uint8_t Adafruit_CAP1188::spixfer(uint8_t data) {
  */
 uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
   if (_i2c) {
-    Wire.beginTransmission(_i2caddr);
+    _wire->beginTransmission(_i2caddr);
     i2cwrite(reg);
-    Wire.endTransmission();
-    Wire.requestFrom(_i2caddr, 1);
+    _wire->endTransmission();
+    _wire->requestFrom(_i2caddr, 1);
     return (i2cread());
   } else {
 #ifdef SPI_HAS_TRANSACTION
@@ -290,10 +294,10 @@ uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
  */
 void Adafruit_CAP1188::writeRegister(uint8_t reg, uint8_t value) {
   if (_i2c) {
-    Wire.beginTransmission(_i2caddr);
+    _wire->beginTransmission(_i2caddr);
     i2cwrite((uint8_t)reg);
     i2cwrite((uint8_t)(value));
-    Wire.endTransmission();
+    _wire->endTransmission();
   } else {
 #ifdef SPI_HAS_TRANSACTION
     spi_begin();
