@@ -36,6 +36,7 @@
 #define CAP1188_MAIN 0x00
 #define CAP1188_MAIN_INT 0x01
 #define CAP1188_LEDPOL 0x73
+#define CAP1188_SENSCTRL 0x1F
 
 
 class Adafruit_CAP1188 {
@@ -54,6 +55,7 @@ class Adafruit_CAP1188 {
   void writeRegister(uint8_t reg, uint8_t value);
   uint8_t touched(void);
   void LEDpolarity(uint8_t x);
+  void sensitivity(uint8_t x);
 
  private:
   uint8_t spixfer(uint8_t x);
