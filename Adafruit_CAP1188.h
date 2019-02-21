@@ -82,7 +82,6 @@ public:
   uint8_t touched();
   void LEDpolarity(uint8_t x);
   void i2cwrite(uint8_t x);
-  uint8_t i2cread();
 
 private:
   uint8_t spixfer(uint8_t x);

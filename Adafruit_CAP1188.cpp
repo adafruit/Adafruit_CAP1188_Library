@@ -42,9 +42,6 @@ static inline void spi_begin(void) {
 }
 static inline void spi_end(void) __attribute__((always_inline));
 static inline void spi_end(void) { SPI.endTransaction(); }
-/* #else */
-/*   #define spi_begin() */
-/*   #define spi_end() */
 #endif
 
 /* uint8_t mySPCR, SPCRback; */
@@ -69,7 +66,7 @@ Adafruit_CAP1188::Adafruit_CAP1188(int8_t resetpin) {
  *            number of pin where reset is connected
  *
  */
-Adafruit_CAP1188::Adafruit_CAP1188(int8_t cspin, int8_t resetpin) {
+Adafruit_CAP1188::Adafruit_CAP1188(int8_t cspin, int8_t resetpin, ) {
   // Hardware SPI
   _cs = cspin;
   _resetpin = resetpin;
@@ -124,13 +121,6 @@ boolean Adafruit_CAP1188::begin(uint8_t i2caddr, TwoWire *theWire) {
     digitalWrite(_cs, HIGH);
 #ifdef SPI_HAS_TRANSACTION
     SPI.begin();
-#else
-    SPCRback = SPCR;
-    SPI.begin();
-    SPI.setClockDivider(SPI_CLOCK_DIV8);
-    SPI.setDataMode(SPI_MODE0);
-    mySPCR = SPCR;
-    SPCR = SPCRback;
 #endif
   } else {
     // Sofware SPI
@@ -177,8 +167,8 @@ boolean Adafruit_CAP1188::begin(uint8_t i2caddr, TwoWire *theWire) {
 }
 
 /*!
- *   @brief  Reads from CAP1188_SENINPUTSTATUS and if touch is detected writes to CAP1188_MAIN
- *   @return Returns read from CAP1188_SENINPUTSTATUS
+ *   @brief  Reads the touched status (CAP1188_SENINPUTSTATUS)
+ *   @return Returns read from CAP1188_SENINPUTSTATUS where 1 is touched, 0 not touched.
  */
 uint8_t Adafruit_CAP1188::touched() {
   uint8_t t = readRegister(CAP1188_SENINPUTSTATUS);
@@ -190,23 +180,12 @@ uint8_t Adafruit_CAP1188::touched() {
 
 /*!
  *   @brief  Controls the output polarity of LEDs.
- *   @param  x
- *           Writes x to CAP1188_LEDPOL register
+ *   @param  inverted
+ *           0 (default) - The LED8 output is inverted.
+ *           1 - The LED8 output is non-inverted.
  */
-void Adafruit_CAP1188::LEDpolarity(uint8_t x) {
-  writeRegister(CAP1188_LEDPOL, x);
-}
-
-/*!
- *   @brief  Abstract away platform differences in Arduino wire library
- *   @return Read value 
- */
-uint8_t Adafruit_CAP1188::i2cread() {
-#if ARDUINO >= 100
-  return _wire->read();
-#else
-  return _wire->receive();
-#endif
+void Adafruit_CAP1188::LEDpolarity(uint8_t inverted) {
+  writeRegister(CAP1188_LEDPOL, inverted);
 }
 
 /*!
@@ -255,15 +234,10 @@ uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
     i2cwrite(reg);
     _wire->endTransmission();
     _wire->requestFrom(_i2caddr, 1);
-    return (i2cread());
+    return (_wire->read());
   } else {
 #ifdef SPI_HAS_TRANSACTION
     spi_begin();
-#else
-    if (_clk == -1) {
-      SPCRback = SPCR;
-      SPCR = mySPCR;
-    }
 #endif
     digitalWrite(_cs, LOW);
     // set address
@@ -276,10 +250,6 @@ uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
     digitalWrite(_cs, HIGH);
 #ifdef SPI_HAS_TRANSACTION
     spi_end();
-#else
-    if (_clk == -1) {
-      SPCR = SPCRback;
-    }
 #endif
     return reply;
   }
@@ -301,11 +271,6 @@ void Adafruit_CAP1188::writeRegister(uint8_t reg, uint8_t value) {
   } else {
 #ifdef SPI_HAS_TRANSACTION
     spi_begin();
-#else
-    if (_clk == -1) {
-      SPCRback = SPCR;
-      SPCR = mySPCR;
-    }
 #endif
     digitalWrite(_cs, LOW);
     // set address
@@ -318,10 +283,6 @@ void Adafruit_CAP1188::writeRegister(uint8_t reg, uint8_t value) {
     digitalWrite(_cs, HIGH);
 #ifdef SPI_HAS_TRANSACTION
     spi_end();
-#else
-    if (_clk == -1) {
-      SPCR = SPCRback;
-    }
 #endif
   }
 }
