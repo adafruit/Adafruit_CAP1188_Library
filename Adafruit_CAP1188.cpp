@@ -66,7 +66,7 @@ Adafruit_CAP1188::Adafruit_CAP1188(int8_t resetpin) {
  *            number of pin where reset is connected
  *
  */
-Adafruit_CAP1188::Adafruit_CAP1188(int8_t cspin, int8_t resetpin, ) {
+Adafruit_CAP1188::Adafruit_CAP1188(int8_t cspin, int8_t resetpin) {
   // Hardware SPI
   _cs = cspin;
   _resetpin = resetpin;
@@ -101,9 +101,10 @@ Adafruit_CAP1188::Adafruit_CAP1188(int8_t clkpin, int8_t misopin,
 }
 
 /*!
- *    @brief  Setups the i2c depending on selected mode (I2C / SPI, Software / Hardware).
- *            Displays useful debug info, as well as allow multiple touches (CAP1188_MTBLK), links leds to touches
- *            (CAP1188_LEDLINK), and increase the cycle time value (CAP1188_STANDBYCFG) 
+ *    @brief  Setups the i2c depending on selected mode (I2C / SPI, Software /
+ * Hardware). Displays useful debug info, as well as allow multiple touches
+ * (CAP1188_MTBLK), links leds to touches (CAP1188_LEDLINK), and increase the
+ * cycle time value (CAP1188_STANDBYCFG)
  *    @param  i2caddr
  *            optional i2caddres (default to 0x29)
  *    @param  theWire
@@ -168,7 +169,8 @@ boolean Adafruit_CAP1188::begin(uint8_t i2caddr, TwoWire *theWire) {
 
 /*!
  *   @brief  Reads the touched status (CAP1188_SENINPUTSTATUS)
- *   @return Returns read from CAP1188_SENINPUTSTATUS where 1 is touched, 0 not touched.
+ *   @return Returns read from CAP1188_SENINPUTSTATUS where 1 is touched, 0 not
+ * touched.
  */
 uint8_t Adafruit_CAP1188::touched() {
   uint8_t t = readRegister(CAP1188_SENINPUTSTATUS);
