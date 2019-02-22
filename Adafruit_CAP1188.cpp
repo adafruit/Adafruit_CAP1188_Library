@@ -56,6 +56,8 @@ Adafruit_CAP1188::Adafruit_CAP1188(int8_t resetpin) {
  *    @brief  Instantiates a new CAP1188 class using hardware SPI
  *    @param  cspin
  *            number of CSPIN (Chip Select)
+ *    @param  *theSPI
+ *            optional parameter contains spi object
  *    @param  resetpin
  *            number of pin where reset is connected
  *
