@@ -72,7 +72,7 @@ public:
   Adafruit_CAP1188(int8_t clkpin, int8_t misopin, int8_t mosipin, int8_t cspin,
                    int8_t resetpin);
   // Hardware SPI
-  Adafruit_CAP1188(int8_t cspin, int8_t resetpin);
+  Adafruit_CAP1188(int8_t cspin, int8_t resetpin, SPIClass *theSPI = &SPI);
   // Hardware I2C
   Adafruit_CAP1188(int8_t resetpin = -1);
 
@@ -84,9 +84,13 @@ public:
   void i2cwrite(uint8_t x);
 
 private:
+  void spi_begin();
+  void spi_end();
+
   uint8_t spixfer(uint8_t x);
   boolean _i2c;
   int8_t _i2caddr, _resetpin, _cs, _clk, _mosi, _miso;
   uint8_t mySPCR, SPCRback;
   TwoWire *_wire;
+  SPIClass *_spi;
 };

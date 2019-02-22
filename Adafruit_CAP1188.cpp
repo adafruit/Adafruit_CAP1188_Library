@@ -34,17 +34,11 @@
 // If the SPI library has transaction support, these functions
 // establish settings and protect from interference from other
 // libraries.  Otherwise, they simply do nothing.
-#ifdef SPI_HAS_TRANSACTION
-static inline void spi_begin(void) __attribute__((always_inline));
-static inline void spi_begin(void) {
+void Adafruit_CAP1188::spi_begin() {
   // max speed!
-  SPI.beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE0));
+  _spi->beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE0));
 }
-static inline void spi_end(void) __attribute__((always_inline));
-static inline void spi_end(void) { SPI.endTransaction(); }
-#endif
-
-/* uint8_t mySPCR, SPCRback; */
+void Adafruit_CAP1188::spi_end() { _spi->endTransaction(); }
 
 /*!
  *    @brief  Instantiates a new CAP1188 class using hardware I2C
@@ -66,12 +60,14 @@ Adafruit_CAP1188::Adafruit_CAP1188(int8_t resetpin) {
  *            number of pin where reset is connected
  *
  */
-Adafruit_CAP1188::Adafruit_CAP1188(int8_t cspin, int8_t resetpin) {
+Adafruit_CAP1188::Adafruit_CAP1188(int8_t cspin, int8_t resetpin,
+                                   SPIClass *theSPI) {
   // Hardware SPI
   _cs = cspin;
   _resetpin = resetpin;
   _clk = -1;
   _i2c = false;
+  _spi = theSPI;
 }
 
 /*!
@@ -121,7 +117,7 @@ boolean Adafruit_CAP1188::begin(uint8_t i2caddr, TwoWire *theWire) {
     pinMode(_cs, OUTPUT);
     digitalWrite(_cs, HIGH);
 #ifdef SPI_HAS_TRANSACTION
-    SPI.begin();
+    _spi->begin();
 #endif
   } else {
     // Sofware SPI
@@ -208,7 +204,7 @@ void Adafruit_CAP1188::i2cwrite(uint8_t x) {
 uint8_t Adafruit_CAP1188::spixfer(uint8_t data) {
   if (_clk == -1) {
     // Serial.println("Hardware SPI");
-    return SPI.transfer(data);
+    return _spi->transfer(data);
   } else {
     // Serial.println("Software SPI");
     uint8_t reply = 0;
