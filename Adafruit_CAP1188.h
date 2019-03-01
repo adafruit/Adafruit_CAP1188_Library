@@ -20,11 +20,7 @@
  *  BSD license, all text above must be included in any redistribution
  */
 
-#if (ARDUINO >= 100)
 #include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
 #include <SPI.h>
 #include <Wire.h>
 
@@ -90,7 +86,6 @@ private:
   uint8_t spixfer(uint8_t x);
   boolean _i2c;
   int8_t _i2caddr, _resetpin, _cs, _clk, _mosi, _miso;
-  uint8_t mySPCR, SPCRback;
   TwoWire *_wire;
   SPIClass *_spi;
 };

@@ -118,9 +118,7 @@ boolean Adafruit_CAP1188::begin(uint8_t i2caddr, TwoWire *theWire) {
     // Hardware SPI
     pinMode(_cs, OUTPUT);
     digitalWrite(_cs, HIGH);
-#ifdef SPI_HAS_TRANSACTION
     _spi->begin();
-#endif
   } else {
     // Sofware SPI
     pinMode(_clk, OUTPUT);
@@ -193,11 +191,7 @@ void Adafruit_CAP1188::LEDpolarity(uint8_t inverted) {
     @param  x
  */
 void Adafruit_CAP1188::i2cwrite(uint8_t x) {
-#if ARDUINO >= 100
   _wire->write((uint8_t)x);
-#else
-  _wire->send(x);
-#endif
 }
 
 /*!
@@ -236,9 +230,7 @@ uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
     _wire->requestFrom(_i2caddr, 1);
     return (_wire->read());
   } else {
-#ifdef SPI_HAS_TRANSACTION
     spi_begin();
-#endif
     digitalWrite(_cs, LOW);
     // set address
     spixfer(0x7D);
@@ -248,9 +240,7 @@ uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
     spixfer(0x7F);
     uint8_t reply = spixfer(0);
     digitalWrite(_cs, HIGH);
-#ifdef SPI_HAS_TRANSACTION
     spi_end();
-#endif
     return reply;
   }
 }
@@ -269,9 +259,7 @@ void Adafruit_CAP1188::writeRegister(uint8_t reg, uint8_t value) {
     i2cwrite((uint8_t)(value));
     _wire->endTransmission();
   } else {
-#ifdef SPI_HAS_TRANSACTION
     spi_begin();
-#endif
     digitalWrite(_cs, LOW);
     // set address
     spixfer(0x7D);
@@ -281,8 +269,6 @@ void Adafruit_CAP1188::writeRegister(uint8_t reg, uint8_t value) {
     spixfer(0x7E);
     spixfer(value);
     digitalWrite(_cs, HIGH);
-#ifdef SPI_HAS_TRANSACTION
     spi_end();
-#endif
   }
 }
