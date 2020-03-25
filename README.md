@@ -1,5 +1,4 @@
-Adafruit_CAP1188 [![Build Status](https://travis-ci.com/adafruit/Adafruit_CAP1188Library.svg?branch=master)](https://travis-ci.com/adafruit/Adafruit_CAP1188_Library)
-================
+# Adafruit_CAP1188_Library [![Build Status](https://github.com/adafruit/Adafruit_CAP1188_Library/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_CAP1188_Library/actions)
 
 <a href="https://www.adafruit.com/product/1602"><img src="assets/board.jpg?raw=true" width="500px"></a>
 
