@@ -190,9 +190,7 @@ void Adafruit_CAP1188::LEDpolarity(uint8_t inverted) {
     @brief  Abstract away platform differences in Arduino wire library
     @param  x
  */
-void Adafruit_CAP1188::i2cwrite(uint8_t x) {
-  _wire->write((uint8_t)x);
-}
+void Adafruit_CAP1188::i2cwrite(uint8_t x) { _wire->write((uint8_t)x); }
 
 /*!
  *   @brief  Reads 8-bits from the specified register
