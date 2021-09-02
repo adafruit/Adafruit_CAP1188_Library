@@ -29,16 +29,6 @@
  */
 
 #include "Adafruit_CAP1188.h"
-#include <Wire.h>
-
-// If the SPI library has transaction support, these functions
-// establish settings and protect from interference from other
-// libraries.  Otherwise, they simply do nothing.
-void Adafruit_CAP1188::spi_begin() {
-  // max speed!
-  _spi->beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE0));
-}
-void Adafruit_CAP1188::spi_end() { _spi->endTransaction(); }
 
 /*!
  *    @brief  Instantiates a new CAP1188 class using hardware I2C
@@ -49,7 +39,6 @@ void Adafruit_CAP1188::spi_end() { _spi->endTransaction(); }
 Adafruit_CAP1188::Adafruit_CAP1188(int8_t resetpin) {
   // I2C
   _resetpin = resetpin;
-  _i2c = true;
 }
 
 /*!
@@ -62,14 +51,12 @@ Adafruit_CAP1188::Adafruit_CAP1188(int8_t resetpin) {
  *            number of pin where reset is connected
  *
  */
-Adafruit_CAP1188::Adafruit_CAP1188(int8_t cspin, int8_t resetpin,
+Adafruit_CAP1188::Adafruit_CAP1188(uint8_t cspin, int8_t resetpin,
                                    SPIClass *theSPI) {
   // Hardware SPI
-  _cs = cspin;
+  spi_dev = new Adafruit_SPIDevice(cspin, 2000000, SPI_BITORDER_MSBFIRST,
+                                   SPI_MODE0, theSPI);
   _resetpin = resetpin;
-  _clk = -1;
-  _i2c = false;
-  _spi = theSPI;
 }
 
 /*!
@@ -86,16 +73,12 @@ Adafruit_CAP1188::Adafruit_CAP1188(int8_t cspin, int8_t resetpin,
  *            number of pin where reset is connected
  *
  */
-Adafruit_CAP1188::Adafruit_CAP1188(int8_t clkpin, int8_t misopin,
-                                   int8_t mosipin, int8_t cspin,
+Adafruit_CAP1188::Adafruit_CAP1188(uint8_t clkpin, uint8_t misopin,
+                                   uint8_t mosipin, uint8_t cspin,
                                    int8_t resetpin) {
   // Software SPI
-  _cs = cspin;
+  spi_dev = new Adafruit_SPIDevice(cspin, clkpin, misopin, mosipin, 2000000);
   _resetpin = resetpin;
-  _clk = clkpin;
-  _miso = misopin;
-  _mosi = mosipin;
-  _i2c = false;
 }
 
 /*!
@@ -110,22 +93,15 @@ Adafruit_CAP1188::Adafruit_CAP1188(int8_t clkpin, int8_t misopin,
  *    @return True if initialization was successful, otherwise false.
  */
 boolean Adafruit_CAP1188::begin(uint8_t i2caddr, TwoWire *theWire) {
-  if (_i2c) {
-    _wire = theWire;
-    _i2caddr = i2caddr;
-    _wire->begin();
-  } else if (_clk == -1) {
-    // Hardware SPI
-    pinMode(_cs, OUTPUT);
-    digitalWrite(_cs, HIGH);
-    _spi->begin();
+  if (spi_dev) {
+    // Hardware or Software SPI
+    if (!spi_dev->begin())
+      return false;
   } else {
-    // Sofware SPI
-    pinMode(_clk, OUTPUT);
-    pinMode(_mosi, OUTPUT);
-    pinMode(_cs, OUTPUT);
-    digitalWrite(_cs, HIGH);
-    digitalWrite(_clk, HIGH);
+    // I2C
+    i2c_dev = new Adafruit_I2CDevice(i2caddr, theWire);
+    if (!i2c_dev->begin())
+      return false;
   }
 
   if (_resetpin != -1) {
@@ -187,60 +163,22 @@ void Adafruit_CAP1188::LEDpolarity(uint8_t inverted) {
 }
 
 /*!
-    @brief  Abstract away platform differences in Arduino wire library
-    @param  x
- */
-void Adafruit_CAP1188::i2cwrite(uint8_t x) { _wire->write((uint8_t)x); }
-
-/*!
- *   @brief  Reads 8-bits from the specified register
- */
-uint8_t Adafruit_CAP1188::spixfer(uint8_t data) {
-  if (_clk == -1) {
-    // Serial.println("Hardware SPI");
-    return _spi->transfer(data);
-  } else {
-    // Serial.println("Software SPI");
-    uint8_t reply = 0;
-    for (int i = 7; i >= 0; i--) {
-      reply <<= 1;
-      digitalWrite(_clk, LOW);
-      digitalWrite(_mosi, data & (1 << i));
-      digitalWrite(_clk, HIGH);
-      if (digitalRead(_miso))
-        reply |= 1;
-    }
-    return reply;
-  }
-}
-
-/*!
  *    @brief  Reads from selected register
  *    @param  reg
  *            register address
  *    @return
  */
 uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
-  if (_i2c) {
-    _wire->beginTransmission(_i2caddr);
-    i2cwrite(reg);
-    _wire->endTransmission();
-    _wire->requestFrom(_i2caddr, 1);
-    return (_wire->read());
+  uint8_t buffer[3] = {reg, 0, 0};
+  if (i2c_dev) {
+    i2c_dev->write_then_read(buffer, 1, buffer, 1);
   } else {
-    spi_begin();
-    digitalWrite(_cs, LOW);
-    // set address
-    spixfer(0x7D);
-    spixfer(reg);
-    digitalWrite(_cs, HIGH);
-    digitalWrite(_cs, LOW);
-    spixfer(0x7F);
-    uint8_t reply = spixfer(0);
-    digitalWrite(_cs, HIGH);
-    spi_end();
-    return reply;
+    buffer[0] = 0x7D;
+    buffer[1] = reg;
+    buffer[2] = 0x7F;
+    spi_dev->write_then_read(buffer, 3, buffer, 1);
   }
+  return buffer[0];
 }
 
 /*!
@@ -251,22 +189,14 @@ uint8_t Adafruit_CAP1188::readRegister(uint8_t reg) {
  *           value that will be written at selected register
  */
 void Adafruit_CAP1188::writeRegister(uint8_t reg, uint8_t value) {
-  if (_i2c) {
-    _wire->beginTransmission(_i2caddr);
-    i2cwrite((uint8_t)reg);
-    i2cwrite((uint8_t)(value));
-    _wire->endTransmission();
+  uint8_t buffer[4] = {reg, value, 0, 0};
+  if (i2c_dev) {
+    i2c_dev->write(buffer, 2);
   } else {
-    spi_begin();
-    digitalWrite(_cs, LOW);
-    // set address
-    spixfer(0x7D);
-    spixfer(reg);
-    digitalWrite(_cs, HIGH);
-    digitalWrite(_cs, LOW);
-    spixfer(0x7E);
-    spixfer(value);
-    digitalWrite(_cs, HIGH);
-    spi_end();
+    buffer[0] = 0x7D;
+    buffer[1] = reg;
+    buffer[2] = 0x7E;
+    buffer[3] = value;
+    spi_dev->write(buffer, 4);
   }
 }
