@@ -77,7 +77,6 @@ public:
   void writeRegister(uint8_t reg, uint8_t value);
   uint8_t touched();
   void LEDpolarity(uint8_t x);
-  void i2cwrite(uint8_t x);
 
 private:
   Adafruit_I2CDevice *i2c_dev = NULL; ///< Pointer to I2C bus interface
