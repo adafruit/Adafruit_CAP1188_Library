@@ -73,12 +73,12 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6ea4e40477f663185c2c3836e7af28ed"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___c_a_p1188.html#a6ea4e40477f663185c2c3836e7af28ed">Adafruit_CAP1188</a> (int8_t clkpin, int8_t misopin, int8_t mosipin, int8_t cspin, int8_t resetpin)</td></tr>
-<tr class="memdesc:a6ea4e40477f663185c2c3836e7af28ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiates a new CAP1188 class using software SPI.  <a href="#a6ea4e40477f663185c2c3836e7af28ed">More...</a><br /></td></tr>
-<tr class="separator:a6ea4e40477f663185c2c3836e7af28ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7b534cc02c95742490d1719f9ffa13a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___c_a_p1188.html#ab7b534cc02c95742490d1719f9ffa13a">Adafruit_CAP1188</a> (int8_t cspin, int8_t resetpin, SPIClass *theSPI=&amp;SPI)</td></tr>
-<tr class="memdesc:ab7b534cc02c95742490d1719f9ffa13a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiates a new CAP1188 class using hardware SPI.  <a href="#ab7b534cc02c95742490d1719f9ffa13a">More...</a><br /></td></tr>
-<tr class="separator:ab7b534cc02c95742490d1719f9ffa13a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08d969ceab5cc01dea8a6df1df8739bd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___c_a_p1188.html#a08d969ceab5cc01dea8a6df1df8739bd">Adafruit_CAP1188</a> (uint8_t clkpin, uint8_t misopin, uint8_t mosipin, uint8_t cspin, int8_t resetpin)</td></tr>
+<tr class="memdesc:a08d969ceab5cc01dea8a6df1df8739bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiates a new CAP1188 class using software SPI.  <a href="#a08d969ceab5cc01dea8a6df1df8739bd">More...</a><br /></td></tr>
+<tr class="separator:a08d969ceab5cc01dea8a6df1df8739bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47f175de3ebce5ba1883c8ec38f27739"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___c_a_p1188.html#a47f175de3ebce5ba1883c8ec38f27739">Adafruit_CAP1188</a> (uint8_t cspin, int8_t resetpin, SPIClass *theSPI=&amp;SPI)</td></tr>
+<tr class="memdesc:a47f175de3ebce5ba1883c8ec38f27739"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiates a new CAP1188 class using hardware SPI.  <a href="#a47f175de3ebce5ba1883c8ec38f27739">More...</a><br /></td></tr>
+<tr class="separator:a47f175de3ebce5ba1883c8ec38f27739"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c259ce3a93be3e1bec628674405cc64"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___c_a_p1188.html#a2c259ce3a93be3e1bec628674405cc64">Adafruit_CAP1188</a> (int8_t resetpin=-1)</td></tr>
 <tr class="memdesc:a2c259ce3a93be3e1bec628674405cc64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiates a new CAP1188 class using hardware I2C.  <a href="#a2c259ce3a93be3e1bec628674405cc64">More...</a><br /></td></tr>
 <tr class="separator:a2c259ce3a93be3e1bec628674405cc64"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -97,15 +97,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a61ea71a9818d5d60115bb5916faf121d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___c_a_p1188.html#a61ea71a9818d5d60115bb5916faf121d">LEDpolarity</a> (uint8_t x)</td></tr>
 <tr class="memdesc:a61ea71a9818d5d60115bb5916faf121d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controls the output polarity of LEDs.  <a href="#a61ea71a9818d5d60115bb5916faf121d">More...</a><br /></td></tr>
 <tr class="separator:a61ea71a9818d5d60115bb5916faf121d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78672bbd0d124b76012dab2d7ad94c93"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___c_a_p1188.html#a78672bbd0d124b76012dab2d7ad94c93">i2cwrite</a> (uint8_t x)</td></tr>
-<tr class="memdesc:a78672bbd0d124b76012dab2d7ad94c93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract away platform differences in Arduino wire library.  <a href="#a78672bbd0d124b76012dab2d7ad94c93">More...</a><br /></td></tr>
-<tr class="separator:a78672bbd0d124b76012dab2d7ad94c93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class that stores state and functions for interacting with CAP1188 Sensor. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a6ea4e40477f663185c2c3836e7af28ed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6ea4e40477f663185c2c3836e7af28ed">&#9670;&nbsp;</a></span>Adafruit_CAP1188() <span class="overload">[1/3]</span></h2>
+<a id="a08d969ceab5cc01dea8a6df1df8739bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08d969ceab5cc01dea8a6df1df8739bd">&#9670;&nbsp;</a></span>Adafruit_CAP1188() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -113,25 +110,25 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">Adafruit_CAP1188::Adafruit_CAP1188 </td>
           <td>(</td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>clkpin</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>misopin</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>mosipin</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>cspin</em>, </td>
         </tr>
         <tr>
@@ -162,8 +159,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ab7b534cc02c95742490d1719f9ffa13a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab7b534cc02c95742490d1719f9ffa13a">&#9670;&nbsp;</a></span>Adafruit_CAP1188() <span class="overload">[2/3]</span></h2>
+<a id="a47f175de3ebce5ba1883c8ec38f27739"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47f175de3ebce5ba1883c8ec38f27739">&#9670;&nbsp;</a></span>Adafruit_CAP1188() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -171,7 +168,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">Adafruit_CAP1188::Adafruit_CAP1188 </td>
           <td>(</td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>cspin</em>, </td>
         </tr>
         <tr>
@@ -375,32 +372,6 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">inverted</td><td>0 (default) - The LED8 output is inverted. 1 - The LED8 output is non-inverted. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a78672bbd0d124b76012dab2d7ad94c93"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78672bbd0d124b76012dab2d7ad94c93">&#9670;&nbsp;</a></span>i2cwrite()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Adafruit_CAP1188::i2cwrite </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>x</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Abstract away platform differences in Arduino wire library. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">x</td><td></td></tr>
   </table>
   </dd>
 </dl>
