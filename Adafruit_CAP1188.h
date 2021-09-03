@@ -21,8 +21,8 @@
  */
 
 #include "Arduino.h"
-#include <SPI.h>
-#include <Wire.h>
+#include <Adafruit_I2CDevice.h>
+#include <Adafruit_SPIDevice.h>
 
 #define CAP1188_I2CADDR 0x29 ///< The default I2C address
 
@@ -65,10 +65,10 @@
 class Adafruit_CAP1188 {
 public:
   // Software SPI
-  Adafruit_CAP1188(int8_t clkpin, int8_t misopin, int8_t mosipin, int8_t cspin,
-                   int8_t resetpin);
+  Adafruit_CAP1188(uint8_t clkpin, uint8_t misopin, uint8_t mosipin,
+                   uint8_t cspin, int8_t resetpin);
   // Hardware SPI
-  Adafruit_CAP1188(int8_t cspin, int8_t resetpin, SPIClass *theSPI = &SPI);
+  Adafruit_CAP1188(uint8_t cspin, int8_t resetpin, SPIClass *theSPI = &SPI);
   // Hardware I2C
   Adafruit_CAP1188(int8_t resetpin = -1);
 
@@ -77,15 +77,9 @@ public:
   void writeRegister(uint8_t reg, uint8_t value);
   uint8_t touched();
   void LEDpolarity(uint8_t x);
-  void i2cwrite(uint8_t x);
 
 private:
-  void spi_begin();
-  void spi_end();
-
-  uint8_t spixfer(uint8_t x);
-  boolean _i2c;
-  int8_t _i2caddr, _resetpin, _cs, _clk, _mosi, _miso;
-  TwoWire *_wire;
-  SPIClass *_spi;
+  Adafruit_I2CDevice *i2c_dev = NULL; ///< Pointer to I2C bus interface
+  Adafruit_SPIDevice *spi_dev = NULL; ///< Pointer to SPI bus interface
+  int8_t _resetpin;
 };
