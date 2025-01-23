@@ -116,14 +116,14 @@ boolean Adafruit_CAP1188::begin(uint8_t i2caddr, TwoWire *theWire) {
 
   readRegister(CAP1188_PRODID);
 
-  // Useful debugging info
+  // Useful debugging info. Comment/uncomment as needed.
 
-  Serial.print("Product ID: 0x");
-  Serial.println(readRegister(CAP1188_PRODID), HEX);
-  Serial.print("Manuf. ID: 0x");
-  Serial.println(readRegister(CAP1188_MANUID), HEX);
-  Serial.print("Revision: 0x");
-  Serial.println(readRegister(CAP1188_REV), HEX);
+  // Serial.print("Product ID: 0x");
+  // Serial.println(readRegister(CAP1188_PRODID), HEX);
+  // Serial.print("Manuf. ID: 0x");
+  // Serial.println(readRegister(CAP1188_MANUID), HEX);
+  // Serial.print("Revision: 0x");
+  // Serial.println(readRegister(CAP1188_REV), HEX);
 
   if ((readRegister(CAP1188_PRODID) != 0x50) ||
       (readRegister(CAP1188_MANUID) != 0x5D) ||
